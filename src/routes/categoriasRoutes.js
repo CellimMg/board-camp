@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { read } from "../controllers/categoriasController.js";
+import { create, read } from "../controllers/categoriasController.js";
 
 const route = Router();
 route.get("/categories", read);
-
+route.post("/categories", create);
 export default route;
