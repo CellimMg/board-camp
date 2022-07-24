@@ -20,3 +20,9 @@ export async function create(cliente) {
     await connection.query("INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4);",
         [name, phone, cpf, birthday]);
 }
+
+export async function update(cliente) {
+    const { id, name, phone, cpf, birthday } = cliente;
+    await connection.query("UPDATE customers SET name = $1, phone = $2, cpf = $3, birthday = $4 WHERE customers.id = $5;",
+        [name, phone, cpf, birthday, id]);
+}

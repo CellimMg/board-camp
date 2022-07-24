@@ -1,4 +1,4 @@
-import { read as readP, readByCPF, readById as readByIdP, create as createP } from "../providers/clientesProvider.js";
+import { read as readP, readByCPF, readById as readByIdP, create as createP, update as updateP } from "../providers/clientesProvider.js";
 import clienteM from "../models/clientesModel.js"
 
 export async function read(req, res) {
@@ -12,7 +12,7 @@ export async function read(req, res) {
         response = await readP(cpf);
     }
 
-    return res.status(200).send({ clientes: response });
+    return res.status(200).send(response);
 }
 
 
@@ -27,7 +27,7 @@ export async function readById(req, res) {
         response = await readP(cpf);
     }
 
-    return res.status(200).send({ clientes: response });
+    return res.status(200).send(response);
 }
 
 export async function create(req, res) {
@@ -38,6 +38,18 @@ export async function create(req, res) {
     if (hasCPF) return res.sendStatus(409);
     await createP(cliente);
     return res.sendStatus(201);
+}
+
+
+export async function update(req, res) {
+    const cliente = req.body;
+    const { id } = req.params;
+
+    if (!isValid(cliente)) return res.sendStatus(400);
+    const hasCPF = await alreadyHasCPF(cliente.cpf);
+    if (hasCPF) return res.sendStatus(409);
+    await updateP({ ...cliente, id });
+    return res.sendStatus(200);
 }
 
 
