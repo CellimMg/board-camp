@@ -15,7 +15,6 @@ export async function create(req, res) {
     return res.sendStatus(201);
 }
 
-
 async function alreadyExistCategory(category) {
     const categorias = await readP();
     const names = categorias.map(categoria => categoria.name);
