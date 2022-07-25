@@ -33,7 +33,7 @@ export async function readById(req, res) {
             response = await readP(cpf);
         }
 
-        return res.status(200).send(response);
+        return res.status(200).send(response[0]);
     } catch (error) {
         return res.sendStatus(500);
     }
