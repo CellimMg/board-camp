@@ -3,7 +3,7 @@ import { read as readP, create as createP } from "../providers/categoriasProvide
 
 export async function read(_, res) {
     const categorias = await readP();
-    res.status(200).send({ categorias: categorias });
+    res.status(200).send(categorias);
 }
 
 export async function create(req, res) {

@@ -7,6 +7,13 @@ export async function read() {
 }
 
 
+export async function readById(gameId) {
+    const { rows: response } =
+        await connection.query('SELECT games.*, categories.name as category FROM games JOIN categories ON games."categoryId" = categories.id WHERE games.id = $1;', [gameId]);
+    return response;
+}
+
+
 export async function readByName(name) {
 
     const queryString =

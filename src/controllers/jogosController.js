@@ -12,7 +12,7 @@ export async function read(req, res) {
         response = await readP();
     }
 
-    return res.status(200).send({ games: response });
+    return res.status(200).send(response);
 }
 
 
