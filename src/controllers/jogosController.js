@@ -4,33 +4,41 @@ import { read as readCategories } from "../providers/categoriasProvider.js";
 
 
 export async function read(req, res) {
-    const { name } = req.query;
-    let response;
-    if (name) {
-        response = await readByName(name.toLowerCase());
-    } else {
-        response = await readP();
-    }
+    try {
+        const { name } = req.query;
+        let response;
+        if (name) {
+            response = await readByName(name.toLowerCase());
+        } else {
+            response = await readP();
+        }
 
-    return res.status(200).send(response);
+        return res.status(200).send(response);
+    } catch (error) {
+        return res.sendStatus(500);
+    }
 }
 
 
 export async function create(req, res) {
-    const game = req.body;
+    try {
+        const game = req.body;
 
-    const validCategoryId = await isCategoryIdValid(game.categoryId);
-    if (!isValid(game) || !validCategoryId) return res.sendStatus(400);
+        const validCategoryId = await isCategoryIdValid(game.categoryId);
+        if (!isValid(game) || !validCategoryId) return res.sendStatus(400);
 
-    const existName = await alreadyExist(game.name);
-    if (existName) return res.sendStatus(409);
+        const existName = await alreadyExist(game.name);
+        if (existName) return res.sendStatus(409);
 
-    await createP(game);
-    return res.sendStatus(200);
+        await createP(game);
+        return res.sendStatus(200);
+    } catch (error) {
+        return res.sendStatus(500);
+    }
 }
 
 
-export async function isCategoryIdValid(categoryId) {
+async function isCategoryIdValid(categoryId) {
     const categories = await readCategories();
     const categoriesIds = categories.map(category => category.id);
 
@@ -38,7 +46,7 @@ export async function isCategoryIdValid(categoryId) {
     return false;
 }
 
-export async function alreadyExist(gameName) {
+async function alreadyExist(gameName) {
     const games = await readP();
     const gamesNames = games.map(game => game.name);
 
@@ -46,7 +54,7 @@ export async function alreadyExist(gameName) {
     return false;
 }
 
-export function isValid(game) {
+function isValid(game) {
     const { error } = jogo.validate(game);
     console.log(error);
     if (error) return false;

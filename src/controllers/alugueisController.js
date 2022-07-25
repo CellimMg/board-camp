@@ -4,70 +4,86 @@ import { readById as readCustomer } from "../providers/clientesProvider.js"
 import { readById as readGame } from "../providers/jogosProvider.js"
 
 export async function read(req, res) {
-    const { gameId, customerId } = req.query;
-    let response;
+    try {
+        const { gameId, customerId } = req.query;
+        let response;
 
-    if (gameId) {
-        response = await readByGameId(gameId);
-    } else if (customerId) {
-        response = await readByCustomerId(customerId);
-    } else {
-        response = await readP();
+        if (gameId) {
+            response = await readByGameId(gameId);
+        } else if (customerId) {
+            response = await readByCustomerId(customerId);
+        } else {
+            response = await readP();
+        }
+        const formattedResponse = response.map(rental => formatRental(rental));
+        return res.status(200).send(formattedResponse);
+    } catch (error) {
+        return res.sendStatus(500);
     }
-    const formattedResponse = response.map(rental => formatRental(rental));
-    return res.status(200).send(formattedResponse);
 }
 
 
 export async function create(req, res) {
-    const rental = req.body;
+    try {
+        const rental = req.body;
 
-    const validCustomer = await isValidCustomerId(rental.customerId);
-    const validGame = await isValidGameId(rental.gameId);
-    const validCount = await isGameAvailable(validGame);
-    if (!validCustomer || !validGame || !isValid(rental) || !validCount) return res.sendStatus(400);
+        const validCustomer = await isValidCustomerId(rental.customerId);
+        const validGame = await isValidGameId(rental.gameId);
+        const validCount = await isGameAvailable(validGame);
+        if (!validCustomer || !validGame || !isValid(rental) || !validCount) return res.sendStatus(400);
 
-    rental.returnDate = null;
-    rental.delayFee = null;
-    rental.rentDate = new Date().toISOString().split("T")[0];
-    rental.originalPrice = rental.daysRented * validGame.pricePerDay;
+        rental.returnDate = null;
+        rental.delayFee = null;
+        rental.rentDate = new Date().toISOString().split("T")[0];
+        rental.originalPrice = rental.daysRented * validGame.pricePerDay;
 
-    await createP(rental);
-    return res.sendStatus(201);
+        await createP(rental);
+        return res.sendStatus(201);
+    } catch (error) {
+        return res.sendStatus(500);
+    }
 }
 
 
 export async function remove(req, res) {
-    const { id } = req.params;
-    const rental = await readById(id);
-    if (rental.length <= 0) return res.sendStatus(404);
-    else if (rental[0].returnDate == null) return res.sendStatus(400);
+    try {
+        const { id } = req.params;
+        const rental = await readById(id);
+        if (rental.length <= 0) return res.sendStatus(404);
+        else if (rental[0].returnDate == null) return res.sendStatus(400);
 
-    await removeP(id);
+        await removeP(id);
 
-    return res.sendStatus(200);
+        return res.sendStatus(200);
+    } catch (error) {
+        return res.sendStatus(500);
+    }
 }
 
 export async function update(req, res) {
-    const { id } = req.params;
-    const rental = await readById(id);
-    console.log(rental);
+    try {
+        const { id } = req.params;
+        const rental = await readById(id);
+        console.log(rental);
 
-    if (rental.length == 0) return res.sendStatus(404);
-    else if (rental[0].returnDate != null) return res.sendStatus(400);
+        if (rental.length == 0) return res.sendStatus(404);
+        else if (rental[0].returnDate != null) return res.sendStatus(400);
 
-    const date = rental[0].rentDate;
-    const returnDate = new Date(Date.now());
-    const diffDays = Math.ceil((returnDate - date) / (1000 * 60 * 60 * 24)) - 1;
+        const date = rental[0].rentDate;
+        const returnDate = new Date(Date.now());
+        const diffDays = Math.ceil((returnDate - date) / (1000 * 60 * 60 * 24)) - 1;
 
 
-    let delayFee = null;
-    if (diffDays > rental[0].daysRented) {
-        delayFee = diffDays * rental[0].originalPrice;
+        let delayFee = null;
+        if (diffDays > rental[0].daysRented) {
+            delayFee = diffDays * rental[0].originalPrice;
+        }
+
+        await updateP(delayFee, returnDate, id);
+        return res.sendStatus(200);
+    } catch (error) {
+        return res.sendStatus(500);
     }
-
-    await updateP(delayFee, returnDate, id);
-    return res.sendStatus(200);
 }
 
 
