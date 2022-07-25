@@ -1,5 +1,5 @@
 import aluguel from "../models/alugueisModel.js";
-import { update as updateP, read as readP, readByCustomerId, readByGameId, readById, create as createP } from "../providers/alugueisProvider.js";
+import { remove as removeP, update as updateP, read as readP, readByCustomerId, readByGameId, readById, create as createP } from "../providers/alugueisProvider.js";
 import { readById as readCustomer } from "../providers/clientesProvider.js"
 import { readById as readGame } from "../providers/jogosProvider.js"
 
@@ -41,13 +41,17 @@ export async function remove(req, res) {
     const { id } = req.params;
     const rental = await readById(id);
     if (rental.length <= 0) return res.sendStatus(404);
-    else if (rental.returnDate == null) return res.sendStatus(400);
+    else if (rental[0].returnDate == null) return res.sendStatus(400);
+
+    await removeP(id);
+
     return res.sendStatus(200);
 }
 
 export async function update(req, res) {
     const { id } = req.params;
     const rental = await readById(id);
+    console.log(rental);
 
     if (rental.length == 0) return res.sendStatus(404);
     else if (rental[0].returnDate != null) return res.sendStatus(400);

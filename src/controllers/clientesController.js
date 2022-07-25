@@ -22,6 +22,7 @@ export async function readById(req, res) {
 
     if (id) {
         response = await readByIdP(id);
+        console.log(response);
         if (response.length == 0) return res.sendStatus(404);
     } else {
         response = await readP(cpf);

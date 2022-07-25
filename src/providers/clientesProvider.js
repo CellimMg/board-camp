@@ -1,17 +1,17 @@
 import connection from "../connection/postgreConnection.js";
 
 export async function read() {
-    const { rows: response } = await connection.query("SELECT * FROM customers");
+    const { rows: response } = await connection.query("SELECT * FROM customers;");
     return response;
 }
 
 export async function readByCPF(cpf) {
-    const { rows: response } = await connection.query("SELECT * FROM customers WHERE customers.cpf LIKE $1", [`${cpf}%`]);
+    const { rows: response } = await connection.query("SELECT * FROM customers WHERE customers.cpf LIKE $1;", [`${cpf}%`]);
     return response;
 }
 
 export async function readById(id) {
-    const { rows: response } = await connection.query("SELECT * FROM customers WHERE customers.id = $1", [id]);
+    const { rows: response } = await connection.query("SELECT * FROM customers WHERE customers.id = $1;", [id]);
     return response;
 }
 

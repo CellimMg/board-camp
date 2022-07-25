@@ -56,7 +56,7 @@ export async function create(rental) {
 }
 
 export async function remove(rentalId) {
-    await connection.query('DELETE * FROM rentals WHERE rentals.id = $1;', [rentalId]);
+    await connection.query('DELETE FROM rentals WHERE rentals.id = $1;', [rentalId]);
 }
 
 export async function update(delayFee, returnDate, id) {

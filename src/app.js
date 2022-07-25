@@ -3,8 +3,10 @@ import categoriesRoute from "./routes/categoriasRoutes.js";
 import jogosRoute from "./routes/jogosRoutes.js";
 import clientesRoute from "./routes/clientesRoutes.js";
 import alugueisRoute from "./routes/alugueisRoute.js";
+import cors from "cors";
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(categoriesRoute);
 app.use(jogosRoute);
