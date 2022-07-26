@@ -61,7 +61,8 @@ export async function update(req, res) {
 
         if (!isValid(cliente)) return res.sendStatus(400);
         const hasCPF = await alreadyHasCPF(cliente.cpf);
-        if (hasCPF) return res.sendStatus(409);
+        const user = await readByIdP(id);
+        if (hasCPF && user[0].cpf != cliente.cpf) return res.sendStatus(409);
         await updateP({ ...cliente, id });
         return res.sendStatus(200);
     } catch (error) {
